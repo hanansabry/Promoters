@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Promoters-Zone</string>
+    <string name="organizer_string">Organizer</string>
+    <string name="promoter_string">Promoter</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="email_empty_err_msg">Email can\'t be empty</string>
+    <string name="password_empty_err_msg">Password can\'t be empty</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="register">Sign Up</string>
+    <string name="name_empty_err_msg">Name can\'t be empty</string>
+    <string name="username_empty_err_msg">Username can\'t be empty</string>
+    <string name="phone_empty_err_msg">Phone can\'t be empty</string>
+    <string name="new_member">New Member</string>
+    <string name="create">Create</string>
 </resources>
