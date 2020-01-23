@@ -1,6 +1,7 @@
 package com.android.promoters.login;
 
 import com.android.promoters.backend.authentication.AuthenticationRepository;
+import com.android.promoters.backend.users.UsersRepository;
 import com.android.promoters.model.User;
 import com.android.promoters.usecase.AuthenticationUseCaseHandler;
 
@@ -19,6 +20,11 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void login(String email, String password, User.UserRole userRole, AuthenticationRepository.LoginCallback callback) {
         mUseCasHandler.login(email, password, userRole, callback);
+    }
+
+    @Override
+    public void getUserName(UsersRepository.UsersRetrievingCallback callback) {
+        mUseCasHandler.getUserName(callback);
     }
 
     @Override

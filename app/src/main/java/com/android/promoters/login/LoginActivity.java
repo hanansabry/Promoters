@@ -1,7 +1,5 @@
 package com.android.promoters.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,19 +7,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.promoters.Injection;
 import com.android.promoters.R;
-import com.android.promoters.SplashActivity;
 import com.android.promoters.backend.authentication.AuthenticationRepository;
+import com.android.promoters.backend.users.UsersRepository;
 import com.android.promoters.model.User;
 import com.android.promoters.organizer_section.OrganizerMainActivity;
 import com.android.promoters.promoter_section.PromoterMainActivity;
 import com.android.promoters.register.RegisterActivity;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseUser;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View, AuthenticationRepository.LoginCallback {
 
@@ -126,22 +125,34 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void onSuccessLogin(FirebaseUser firebaseUser) {
         hideProgressBar();
-        Toast.makeText(this, "Welcome, " + firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
-        if (selectedRole == User.UserRole.ORGANIZER) {
-            goToOrganizerSection();
-        } else if (selectedRole == User.UserRole.PROMOTER) {
-            goToPromoterSection();
-        }
+//        Toast.makeText(this, "Welcome, " + firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
+        mPresenter.getUserName(new UsersRepository.UsersRetrievingCallback() {
+            @Override
+            public void onUserRetrievedSuccessfully(User user) {
+                if (selectedRole == User.UserRole.ORGANIZER) {
+                    goToOrganizerSection(user);
+                } else if (selectedRole == User.UserRole.PROMOTER) {
+                    goToPromoterSection(user);
+                }
+            }
+
+            @Override
+            public void onUserRetrievedFailed(String err) {
+                Toast.makeText(LoginActivity.this, "Something wrong is happened, Please try again.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void goToPromoterSection() {
+    private void goToPromoterSection(User user) {
         Intent intent = new Intent(this, PromoterMainActivity.class);
+        intent.putExtra(User.class.getName(), user.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
-    private void goToOrganizerSection() {
+    private void goToOrganizerSection(User user) {
         Intent intent = new Intent(this, OrganizerMainActivity.class);
+        intent.putExtra(User.class.getName(), user.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

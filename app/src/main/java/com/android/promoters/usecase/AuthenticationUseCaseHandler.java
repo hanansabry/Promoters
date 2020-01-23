@@ -2,6 +2,7 @@ package com.android.promoters.usecase;
 
 
 import com.android.promoters.backend.authentication.AuthenticationRepository;
+import com.android.promoters.backend.users.UsersRepository;
 import com.android.promoters.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -9,9 +10,11 @@ import com.google.firebase.auth.FirebaseUser;
 public class AuthenticationUseCaseHandler {
 
     private AuthenticationRepository mRepository;
+    private UsersRepository mUsersRepository;
 
-    public AuthenticationUseCaseHandler(AuthenticationRepository repository) {
+    public AuthenticationUseCaseHandler(AuthenticationRepository repository, UsersRepository usersRepository) {
         mRepository = repository;
+        mUsersRepository = usersRepository;
     }
 
     public void registerNewUser(User po, AuthenticationRepository.RegistrationCallback callback){
@@ -33,5 +36,9 @@ public class AuthenticationUseCaseHandler {
         } else {
             return "";
         }
+    }
+
+    public void getUserName(UsersRepository.UsersRetrievingCallback callback) {
+        mUsersRepository.getCurrentUserData(callback);
     }
 }

@@ -1,7 +1,5 @@
 package com.android.promoters;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +12,8 @@ import com.android.promoters.model.User;
 import com.android.promoters.organizer_section.OrganizerMainActivity;
 import com.android.promoters.promoter_section.PromoterMainActivity;
 import com.google.firebase.auth.FirebaseAuth;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -41,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
                             } else {
                                 mainIntent = new Intent(SplashActivity.this, PromoterMainActivity.class);
                             }
+                            mainIntent.putExtra(User.class.getName(), user.getName());
                             startActivity(mainIntent);
                             finish();
                         }

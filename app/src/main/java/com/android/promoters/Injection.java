@@ -3,6 +3,8 @@ package com.android.promoters;
 
 import com.android.promoters.backend.authentication.AuthenticationRepository;
 import com.android.promoters.backend.authentication.AuthenticationRepositoryImpl;
+import com.android.promoters.backend.users.UsersRepository;
+import com.android.promoters.backend.users.UsersRepositoryImpl;
 import com.android.promoters.usecase.AuthenticationUseCaseHandler;
 
 public class Injection {
@@ -12,7 +14,11 @@ public class Injection {
     }
 
     public static AuthenticationUseCaseHandler provideAuthenticationUseCaseHandler() {
-        return new AuthenticationUseCaseHandler(provideAuthenticationRepository());
+        return new AuthenticationUseCaseHandler(provideAuthenticationRepository(), provideUsersRepository());
+    }
+
+    public static UsersRepository provideUsersRepository() {
+        return new UsersRepositoryImpl();
     }
 //
 //

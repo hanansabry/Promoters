@@ -1,7 +1,5 @@
 package com.android.promoters.register;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +19,8 @@ import com.android.promoters.promoter_section.PromoterMainActivity;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseUser;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class RegisterActivity extends AppCompatActivity implements RegisterContract.View, AuthenticationRepository.RegistrationCallback {
 
     private RegisterContract.Presenter mPresenter;
@@ -34,9 +34,6 @@ public class RegisterActivity extends AppCompatActivity implements RegisterContr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-//        String role = getIntent().getExtras().getString(User.class.getName());
-//        userRole = User.UserRole.valueOf(role);
 
         mPresenter = new RegisterPresenter(this, Injection.provideAuthenticationUseCaseHandler());
         initializeViews();
@@ -155,6 +152,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterContr
 
     private void goToOrganizerSection() {
         Intent homeIntent = new Intent(this, OrganizerMainActivity.class);
+        homeIntent.putExtra(User.class.getName(), nameEditText.getText().toString().trim());
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(homeIntent);
     }
@@ -182,6 +180,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterContr
 
     private void goToPromoterSection() {
         Intent homeIntent = new Intent(this, PromoterMainActivity.class);
+        homeIntent.putExtra(User.class.getName(), nameEditText.getText().toString().trim());
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(homeIntent);
     }
