@@ -23,44 +23,37 @@
             android:id="@+id/promoter_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="3.5"
             android:fontFamily="@font/coming_soon"
             android:padding="8dp"
             android:text="@string/candidates_promoters"
             android:textColor="@android:color/black" />
 
-        <TextView
-            android:id="@+id/rank"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/coming_soon"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/rank"
-            android:textColor="@android:color/black" />
-
         <FrameLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1.5">
 
             <TextView
-                android:id="@+id/accept_textview"
+                android:id="@+id/rank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/coming_soon"
+                android:padding="8dp"
+                android:text="@string/rank"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
+
+            <EditText
+                android:id="@+id/add_rank_edittext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/coming_soon"
-                android:padding="8dp"
-                android:text="@string/accept"
+                android:background="@null"
+                android:hint="Set Rank"
                 android:textColor="@android:color/black"
-                android:visibility="invisible" />
-
-            <CheckBox
-                android:id="@+id/accept_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:inputType="numberSigned" />
 
         </FrameLayout>
 

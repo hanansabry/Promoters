@@ -19,4 +19,8 @@
     <string name="start_date">Start Date</string>
     <string name="end_date">End Date</string>
     <string name="apply">Apply</string>
+    <string name="candidates_promoters">Candidates Promoters</string>
+    <string name="rank">Rank</string>
+    <string name="accept">Accept</string>
+    <string name="promoter_name">Promoter Name</string>
 </resources>

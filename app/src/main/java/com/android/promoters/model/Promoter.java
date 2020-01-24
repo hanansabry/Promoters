@@ -1,13 +1,12 @@
 package com.android.promoters.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class Promoter extends User {
 
     private String region;
     private int experience;
+    private int rank;
     private ArrayList<String> skills;
     private ArrayList<String> eventsList;
 
@@ -25,6 +24,14 @@ public class Promoter extends User {
 
     public void setExperience(int experience) {
         this.experience = experience;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     public ArrayList<String> getSkills() {
