@@ -14,7 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.promoters.Injection;
 import com.android.promoters.R;
+import com.android.promoters.backend.events.EventsRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Skill;
 import com.google.android.material.textfield.TextInputLayout;
@@ -26,7 +28,7 @@ import java.util.Locale;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class NewEventActivity extends AppCompatActivity {
+public class NewEventActivity extends AppCompatActivity implements EventsRepository.EventsInsertionCallback {
 
     private TextInputLayout eventTitleTextInput, startDateTextInput, endDateTextInput;
     private EditText eventTitleEditText, startDateEditText, endDateEditText;
@@ -45,7 +47,7 @@ public class NewEventActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new NewEventPresenter(this);
+        presenter = new NewEventPresenter(Injection.provideEventsRepository(), this);
 
         initializeViews();
         populateRegionsSpinner();
@@ -191,7 +193,7 @@ public class NewEventActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.create_action) {
             Event newEvent = getEventData();
             if (presenter.validateEventData(newEvent)) {
-                Toast.makeText(this, "New event is added successfully", Toast.LENGTH_SHORT).show();
+                presenter.addNewEvent(newEvent, this);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -243,5 +245,16 @@ public class NewEventActivity extends AppCompatActivity {
 
     public void showErrorMessage() {
         Toast.makeText(this, "Please enter all fields.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onEventInsertedSuccessfully() {
+        Toast.makeText(this, "New event is added successfully", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    public void onEventInsertedFailed(String errmsg) {
+        Toast.makeText(this, errmsg, Toast.LENGTH_SHORT).show();
     }
 }

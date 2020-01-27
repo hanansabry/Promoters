@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.promoters.EmptyRecyclerView;
 import com.android.promoters.R;
+import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
+import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.EventsHistoryPresenter;
 import com.android.promoters.organizer_section.events_history.promoters_list.AcceptedPromotersAdapter;
 import com.android.promoters.organizer_section.events_history.promoters_list.CandidatePromotersAdapter;
@@ -54,7 +57,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         private TextView eventNameTextView, startDateTextView, endDateTextView, eventStatusTextView;
         private EmptyRecyclerView promotersRecyclerView;
-        private CandidatePromotersAdapter adapter;
+        private CandidatePromotersAdapter candidatePromotersAdapter;
+        private AcceptedPromotersAdapter acceptedPromotersAdapter;
         private Context context;
 
         public EventViewHolder(@NonNull View itemView) {
@@ -67,6 +71,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             eventStatusTextView = itemView.findViewById(R.id.event_status);
 
             initializePromotersRecyclerView(itemView);
+//            presenter.retrieveaccptedpromoters(getAdapterPosition());
         }
 
         private void initializePromotersRecyclerView(View itemView) {
@@ -82,13 +87,34 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             eventStatusTextView.setText(event.getStatus().name());
             if (event.getStatus() != Event.EventStatus.Closed) {
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorThird));
-                CandidatePromotersAdapter adapter = new CandidatePromotersAdapter(presenter);
-                promotersRecyclerView.setAdapter(adapter);
-                adapter.bindPromoters(event.getCandidatePromoters());
+                candidatePromotersAdapter = new CandidatePromotersAdapter(presenter);
+                promotersRecyclerView.setAdapter(candidatePromotersAdapter);
+                presenter.retrieveCandidatePromoters(getAdapterPosition(), new PromotersRepository.PromotersRetrievingCallback() {
+                    @Override
+                    public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
+                        candidatePromotersAdapter.bindPromoters(promoters);
+                    }
+
+                    @Override
+                    public void onPromotersRetrievedFailed(String errmsg) {
+                        Toast.makeText(context, errmsg, Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
-                AcceptedPromotersAdapter adapter = new AcceptedPromotersAdapter(presenter);
-                promotersRecyclerView.setAdapter(adapter);
-                adapter.bindPromoters(event.getAcceptedPromoters());
+                eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorAccent));
+                acceptedPromotersAdapter = new AcceptedPromotersAdapter(presenter);
+                promotersRecyclerView.setAdapter(acceptedPromotersAdapter);
+                presenter.retrieveAcceptedPromoters(getAdapterPosition(), new PromotersRepository.PromotersRetrievingCallback() {
+                    @Override
+                    public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
+                        acceptedPromotersAdapter.bindPromoters(promoters);
+                    }
+
+                    @Override
+                    public void onPromotersRetrievedFailed(String errmsg) {
+                        Toast.makeText(context, errmsg, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }

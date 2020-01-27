@@ -1,6 +1,7 @@
 package com.android.promoters.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Event {
 
@@ -15,8 +16,8 @@ public class Event {
     private String endDate;
     private String region;
     private ArrayList<Skill> requiredSkills;
-    private ArrayList<Promoter> acceptedPromoters;
-    private ArrayList<Promoter> candidatePromoters;
+    private HashMap<String, Boolean> acceptedPromotersIds;
+    private HashMap<String, Boolean> candidatePromotersIds;
     private EventStatus status;
 
     public String getId() {
@@ -75,20 +76,20 @@ public class Event {
         this.requiredSkills = requiredSkills;
     }
 
-    public ArrayList<Promoter> getAcceptedPromoters() {
-        return acceptedPromoters;
+    public HashMap<String, Boolean> getAcceptedPromotersIds() {
+        return acceptedPromotersIds;
     }
 
-    public void setAcceptedPromoters(ArrayList<Promoter> acceptedPromoters) {
-        this.acceptedPromoters = acceptedPromoters;
+    public void setAcceptedPromotersIds(HashMap<String, Boolean> acceptedPromotersIds) {
+        this.acceptedPromotersIds = acceptedPromotersIds;
     }
 
-    public ArrayList<Promoter> getCandidatePromoters() {
-        return candidatePromoters;
+    public HashMap<String, Boolean> getCandidatePromotersIds() {
+        return candidatePromotersIds;
     }
 
-    public void setCandidatePromoters(ArrayList<Promoter> candidatePromoters) {
-        this.candidatePromoters = candidatePromoters;
+    public void setCandidatePromotersIds(HashMap<String, Boolean> candidatePromotersIds) {
+        this.candidatePromotersIds = candidatePromotersIds;
     }
 
     public EventStatus getStatus() {

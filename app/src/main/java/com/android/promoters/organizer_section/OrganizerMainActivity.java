@@ -10,7 +10,7 @@ import com.android.promoters.login.LoginActivity;
 import com.android.promoters.model.User;
 import com.android.promoters.organizer_section.events_history.EventsHistoryActivity;
 import com.android.promoters.organizer_section.new_event.NewEventActivity;
-import com.android.promoters.organizer_section.organizer_profile.OrganizerProfile;
+import com.android.promoters.organizer_section.organizer_profile.OrganizerHistoryProfile;
 import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +36,7 @@ public class OrganizerMainActivity extends AppCompatActivity {
     }
 
     public void onCompanyProfileClicked(View view) {
-        startActivity(new Intent(this, OrganizerProfile.class));
+        startActivity(new Intent(this, OrganizerHistoryProfile.class));
     }
 
     public void logout(View view) {

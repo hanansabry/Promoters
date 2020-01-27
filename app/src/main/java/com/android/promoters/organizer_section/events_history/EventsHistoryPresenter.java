@@ -1,18 +1,30 @@
 package com.android.promoters.organizer_section.events_history;
 
+import com.android.promoters.backend.events.EventsRepository;
+import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.events_list.EventsAdapter;
 import com.android.promoters.organizer_section.events_history.promoters_list.AcceptedPromotersAdapter;
 import com.android.promoters.organizer_section.events_history.promoters_list.CandidatePromotersAdapter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
 
     private ArrayList<Event> events = new ArrayList<>();
     private ArrayList<Promoter> candidatePromoters = new ArrayList<>();
     private ArrayList<Promoter> acceptedPromoters = new ArrayList<>();
+    private final EventsRepository eventsRepository;
+    private final PromotersRepository promotersRepository;
+
+    public EventsHistoryPresenter(EventsRepository eventsRepository, PromotersRepository promotersRepository) {
+        this.eventsRepository = eventsRepository;
+        this.promotersRepository = promotersRepository;
+    }
 
     @Override
     public void bindEventsList(ArrayList<Event> events) {
@@ -22,6 +34,7 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
     @Override
     public void onBindEventItemAtPosition(EventsAdapter.EventViewHolder viewHolder, int position) {
         Event event = events.get(position);
+        event.setStatus(getEventStatus(event));
         viewHolder.setEventData(event);
     }
 
@@ -31,34 +44,8 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
     }
 
     @Override
-    public ArrayList<Event> retrieveEvents() {
-        ArrayList<Event> list = new ArrayList<>();
-        Event e1 = new Event();
-        e1.setTitle("My new event1");
-        e1.setStartDate("25/1/2020");
-        e1.setEndDate("30/1/2020");
-        e1.setStatus(Event.EventStatus.Upcoming);
-        e1.setCandidatePromoters(retrieveCandidatePromoters());
-        list.add(e1);
-
-        Event e2 = new Event();
-        e2.setTitle("My new event2");
-        e2.setStartDate("20/1/2020");
-        e2.setEndDate("27/1/2020");
-        e2.setStatus(Event.EventStatus.Active);
-        e2.setCandidatePromoters(retrieveCandidatePromoters());
-        list.add(e2);
-
-        Event e3 = new Event();
-        e3.setTitle("My new event3");
-        e3.setStartDate("15/1/2020");
-        e3.setEndDate("19/1/2020");
-        e3.setStatus(Event.EventStatus.Closed);
-        e3.setCandidatePromoters(new ArrayList<Promoter>());
-        e3.setAcceptedPromoters(retrieveaccptedpromoters());
-        list.add(e3);
-
-        return list;
+    public void getEventsOfOrganizer(String organizerId, EventsRepository.EventsRetrievingCallback callback) {
+        eventsRepository.getAllEventsOfOrganizer(organizerId, callback);
     }
 
     @Override
@@ -94,53 +81,46 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
     }
 
     @Override
-    public ArrayList<Promoter> retrieveCandidatePromoters() {
-        ArrayList<Promoter> promoters = new ArrayList<>();
-
-        Promoter p1 = new Promoter();
-        p1.setName("New Promoter 1");
-        p1.setRank(10);
-        promoters.add(p1);
-
-
-        Promoter p2 = new Promoter();
-        p2.setName("New Promoter 2");
-        p2.setRank(5);
-        promoters.add(p2);
-
-        Promoter p3 = new Promoter();
-        p3.setName("New Promoter 3");
-        p3.setRank(7);
-        promoters.add(p3);
-
-        return promoters;
+    public void retrieveCandidatePromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
+        final Event event = events.get(position);
+        if (event.getCandidatePromotersIds() != null) {
+            promotersRepository.getCandidatePromotersListByIds(
+                    new ArrayList<>(event.getCandidatePromotersIds().keySet())
+                    , callback);
+        }
     }
 
-    public ArrayList<Promoter> retrieveaccptedpromoters() {
-        ArrayList<Promoter> promoters = new ArrayList<>();
-
-        Promoter p1 = new Promoter();
-        p1.setName("Accepted Promoter 1");
-//        p1.setRank(10);
-        promoters.add(p1);
-
-        Promoter p3 = new Promoter();
-        p3.setName("Accepted Promoter 3");
-//        p1.setRank(10);
-        promoters.add(p3);
-
-
-        Promoter p2 = new Promoter();
-        p2.setName("Accepted Promoter 2");
-//        p2.setRank(5);
-        promoters.add(p2);
-
-        return promoters;
+    @Override
+    public void retrieveAcceptedPromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
+        final Event event = events.get(position);
+        if (event.getAcceptedPromotersIds() != null) {
+            promotersRepository.getAcceptedPromotersListByIds(
+                    new ArrayList<>(event.getAcceptedPromotersIds().keySet())
+                    , callback);
+        }
     }
+
 
     public void setPromoterRank(int rank, int adapterPosition) {
         Promoter promoter = candidatePromoters.get(adapterPosition);
         promoter.setRank(rank);
     }
 
+    public Event.EventStatus getEventStatus(Event event) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date startDate = sdf.parse(event.getStartDate());
+            Date endDate = sdf.parse(event.getEndDate());
+            if (startDate.after(new Date())) {
+                return Event.EventStatus.Upcoming;
+            } else if (endDate.before(new Date())) {
+                return Event.EventStatus.Closed;
+            } else if (startDate.before(new Date()) && endDate.after(new Date())) {
+                return Event.EventStatus.Active;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

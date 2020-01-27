@@ -1,16 +1,15 @@
 package com.android.promoters.organizer_section.new_event;
 
+import com.android.promoters.backend.events.EventsRepository;
 import com.android.promoters.model.Event;
-import com.android.promoters.model.Skill;
-
-import java.util.ArrayList;
 
 public class NewEventPresenter {
 
-    private ArrayList<Skill> requiredSkills = new ArrayList<>();
+    final private EventsRepository eventsRepository;
     final private NewEventActivity view;
 
-    public NewEventPresenter(NewEventActivity view) {
+    public NewEventPresenter(EventsRepository eventsRepository, NewEventActivity view) {
+        this.eventsRepository = eventsRepository;
         this.view = view;
     }
 
@@ -25,5 +24,9 @@ public class NewEventPresenter {
             return false;
         }
         return true;
+    }
+
+    public void addNewEvent(Event event, EventsRepository.EventsInsertionCallback callback) {
+        eventsRepository.addNewEvent(event, callback);
     }
 }

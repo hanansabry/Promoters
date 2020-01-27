@@ -1,5 +1,7 @@
 package com.android.promoters.backend.users;
 
+import com.android.promoters.model.Organizer;
+import com.android.promoters.model.Promoter;
 import com.android.promoters.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,13 +26,15 @@ public class UsersRepositoryImpl implements UsersRepository {
     }
 
     @Override
-    public void insertNewUser(User user, final UserInsertionCallback callback) {
+    public void insertNewUser(final User user, final UserInsertionCallback callback) {
         String userId = user.getId();
         mDatabase.getReference(USERS_COLLECTION).child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     callback.onUserInsertedSuccessfully();
+                    //add the user to organizers or promoters collection
+                    createNewOrganizerOrPromoter(user);
                 } else {
                     callback.onUserInsertedFailed(task.getException().getMessage());
                 }
@@ -40,6 +44,18 @@ public class UsersRepositoryImpl implements UsersRepository {
         HashMap<String, Object> userRoles = new HashMap<>();
         userRoles.put(userId, user.getRole().name());
         mDatabase.getReference(ROLES).updateChildren(userRoles);
+    }
+
+    private void createNewOrganizerOrPromoter(User user) {
+        if (user.getRole() == User.UserRole.ORGANIZER) {
+            Organizer organizer = new Organizer();
+            organizer.setName(user.getName());
+            mDatabase.getReference("organizers").child(user.getId()).setValue(organizer);
+        } else if (user.getRole() == User.UserRole.PROMOTER) {
+            Promoter promoter = new Promoter();
+            promoter.setName(user.getName());
+            mDatabase.getReference("promoters").child(user.getId()).setValue(promoter);
+        }
     }
 
     @Override

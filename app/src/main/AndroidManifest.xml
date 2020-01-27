@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".organizer_section.new_event.NewEventActivity"></activity>
         <activity android:name=".organizer_section.events_history.EventsHistoryActivity" />
-        <activity android:name=".organizer_section.organizer_profile.OrganizerProfile" />
+        <activity android:name=".organizer_section.organizer_profile.OrganizerHistoryProfile" />
         <activity android:name=".promoter_section.PromoterMainActivity" />
         <activity android:name=".organizer_section.OrganizerMainActivity" />
         <activity android:name=".register.RegisterActivity" />

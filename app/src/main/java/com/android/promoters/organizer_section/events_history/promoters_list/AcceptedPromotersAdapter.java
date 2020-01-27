@@ -48,7 +48,11 @@ public class AcceptedPromotersAdapter extends RecyclerView.Adapter<AcceptedPromo
 
     @Override
     public int getItemCount() {
-        return presenter.getAcceptedPromotersListSize() + 1;
+        if (presenter.getCandidatePromotersListSize() == 0) {
+            return 0;
+        } else {
+            return presenter.getAcceptedPromotersListSize() + 1;
+        }
     }
 
 

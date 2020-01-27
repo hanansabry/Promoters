@@ -1,6 +1,8 @@
 package com.android.promoters.organizer_section.events_history;
 
 import com.android.promoters.BasePresenter;
+import com.android.promoters.backend.events.EventsRepository;
+import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.events_list.EventsAdapter;
@@ -19,7 +21,7 @@ public interface EventsHistoryContract {
 
         int getEventsListSize();
 
-        ArrayList<Event> retrieveEvents();
+        void getEventsOfOrganizer(String organizerId, EventsRepository.EventsRetrievingCallback callback);
 
         void bindCandidatePromotersList(ArrayList<Promoter> promoters);
 
@@ -33,6 +35,8 @@ public interface EventsHistoryContract {
 
         int getAcceptedPromotersListSize();
 
-        ArrayList<Promoter> retrieveCandidatePromoters();
+        void retrieveCandidatePromoters(int position, PromotersRepository.PromotersRetrievingCallback callback);
+
+        void retrieveAcceptedPromoters(int position, PromotersRepository.PromotersRetrievingCallback callback);
     }
 }

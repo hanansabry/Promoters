@@ -2,13 +2,31 @@ package com.android.promoters.model;
 
 import java.util.ArrayList;
 
-public class Promoter extends User {
+public class Promoter {
 
+    private String id;
+    private String name;
     private String region;
     private int experience;
     private int rank;
     private ArrayList<String> skills;
     private ArrayList<String> eventsList;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getRegion() {
         return region;

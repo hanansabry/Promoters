@@ -48,7 +48,11 @@ public class CandidatePromotersAdapter extends RecyclerView.Adapter<CandidatePro
 
     @Override
     public int getItemCount() {
-        return presenter.getCandidatePromotersListSize() + 1;
+        if (presenter.getCandidatePromotersListSize() == 0) {
+            return 0;
+        } else {
+            return presenter.getCandidatePromotersListSize() + 1;
+        }
     }
 
     public class PromoterViewHolder extends RecyclerView.ViewHolder {

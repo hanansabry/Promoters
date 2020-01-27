@@ -2,18 +2,26 @@ package com.android.promoters.organizer_section.events_history;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.promoters.EmptyRecyclerView;
+import com.android.promoters.Injection;
 import com.android.promoters.R;
+import com.android.promoters.backend.events.EventsRepository;
+import com.android.promoters.model.Event;
 import com.android.promoters.organizer_section.events_history.events_list.EventsAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-public class EventsHistoryActivity extends AppCompatActivity {
+public class EventsHistoryActivity extends AppCompatActivity implements EventsRepository.EventsRetrievingCallback {
 
     private EventsHistoryPresenter presenter;
+    private EventsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +31,18 @@ public class EventsHistoryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new EventsHistoryPresenter();
+        presenter = new EventsHistoryPresenter(Injection.provideEventsRepository(), Injection.providePromotersRepository());
 
         initializeEventsRecyclerView();
+        presenter.getEventsOfOrganizer(FirebaseAuth.getInstance().getCurrentUser().getUid(), this);
     }
 
     private void initializeEventsRecyclerView() {
         EmptyRecyclerView eventsRecyclerView = findViewById(R.id.organizer_events_history_rv);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventsRecyclerView.setEmptyView(findViewById(R.id.empty_view));
-        EventsAdapter adapter = new EventsAdapter(presenter);
+        adapter = new EventsAdapter(presenter);
         eventsRecyclerView.setAdapter(adapter);
-        adapter.bindEventsList(presenter.retrieveEvents());
     }
 
     @Override
@@ -43,5 +51,15 @@ public class EventsHistoryActivity extends AppCompatActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onEventsRetrievedSuccessfully(ArrayList<Event> events) {
+        adapter.bindEventsList(events);
+    }
+
+    @Override
+    public void onEventsRetrievedFailed(String errmsg) {
+        Toast.makeText(this, errmsg, Toast.LENGTH_SHORT).show();
     }
 }
