@@ -2,15 +2,15 @@ package com.android.promoters.model;
 
 public class Skill {
 
-    private String skillName;
+    private String name;
     private int requiredPromoters;
 
-    public String getSkillName() {
-        return skillName;
+    public String getName() {
+        return name;
     }
 
-    public void setSkillName(String skillName) {
-        this.skillName = skillName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getRequiredPromoters() {

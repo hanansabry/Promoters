@@ -1,12 +1,16 @@
 package com.android.promoters.backend.promoters;
 
 import com.android.promoters.model.Promoter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
@@ -21,7 +25,8 @@ public class PromotersRepositoryImpl implements PromotersRepository {
     }
 
     @Override
-    public void getPromoterById(final String promoterId, final PromotersRetrievingCallback callback) {
+    public void getPromoterById(final PromotersRetrievingCallback callback) {
+        String promoterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mDatabase.getReference(PROMOTERS_COLLECTION).child(promoterId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -36,6 +41,23 @@ public class PromotersRepositoryImpl implements PromotersRepository {
                 callback.onPromotersRetrievedFailed(databaseError.getMessage());
             }
         });
+    }
+
+    @Override
+    public void updatePromoterData(HashMap<String, Object> updatedValues, final UpdatePromoterCallback callback) {
+        String promoterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabase.getReference(PROMOTERS_COLLECTION).child(promoterId)
+                .updateChildren(updatedValues)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            callback.onPromoterUpdatedSuccessfully();
+                        } else {
+                            callback.onPromoterUpdatedFailed(task.getException().getMessage());
+                        }
+                    }
+                });
     }
 
     private int promotersCounter1;

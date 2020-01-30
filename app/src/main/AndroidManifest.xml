@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".organizer_section.new_event.NewEventActivity"></activity>
+        <activity android:name=".promoter_section.search_for_chance.ActiveEventsActivity"></activity>
+        <activity android:name=".promoter_section.profile.PromoterProfileActivity" />
+        <activity android:name=".promoter_section.events_history.PromoterEventsHistoryActivity" />
+        <activity android:name=".organizer_section.new_event.NewEventActivity" />
         <activity android:name=".organizer_section.events_history.EventsHistoryActivity" />
         <activity android:name=".organizer_section.organizer_profile.OrganizerHistoryProfile" />
         <activity android:name=".promoter_section.PromoterMainActivity" />

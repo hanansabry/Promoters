@@ -3,10 +3,9 @@ package com.android.promoters.backend.promoters;
 import com.android.promoters.model.Promoter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface PromotersRepository {
-
-    void getAcceptedPromotersListByIds(ArrayList<String> ids, PromotersRetrievingCallback callback);
 
     interface PromotersRetrievingCallback {
 
@@ -15,7 +14,18 @@ public interface PromotersRepository {
         void onPromotersRetrievedFailed(String errmsg);
     }
 
-    void getPromoterById(String promoterId, PromotersRetrievingCallback callback);
+    interface UpdatePromoterCallback {
+
+        void onPromoterUpdatedSuccessfully();
+
+        void onPromoterUpdatedFailed(String errmsg);
+    }
+
+    void getPromoterById(PromotersRetrievingCallback callback);
+
+    void updatePromoterData(HashMap<String, Object> updatedValues, UpdatePromoterCallback callback);
 
     void getCandidatePromotersListByIds(ArrayList<String> ids, PromotersRetrievingCallback callback);
+
+    void getAcceptedPromotersListByIds(ArrayList<String> ids, PromotersRetrievingCallback callback);
 }

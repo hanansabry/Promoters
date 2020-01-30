@@ -9,6 +9,8 @@ import com.android.promoters.backend.organizer.OrganizerRepository;
 import com.android.promoters.backend.organizer.OrganizerRepositoryImpl;
 import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.backend.promoters.PromotersRepositoryImpl;
+import com.android.promoters.backend.skills_regions.RegionsRepository;
+import com.android.promoters.backend.skills_regions.SkillsRepository;
 import com.android.promoters.backend.users.UsersRepository;
 import com.android.promoters.backend.users.UsersRepositoryImpl;
 import com.android.promoters.usecase.AuthenticationUseCaseHandler;
@@ -37,6 +39,14 @@ public class Injection {
 
     public static PromotersRepository providePromotersRepository() {
         return new PromotersRepositoryImpl();
+    }
+
+    public static SkillsRepository provideSkillsRepository() {
+        return new SkillsRepository();
+    }
+
+    public static RegionsRepository provideRegionsRepository() {
+        return new RegionsRepository();
     }
 //
 //

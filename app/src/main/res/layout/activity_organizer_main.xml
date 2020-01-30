@@ -30,7 +30,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/coming_soon"
             android:text="ORGANIZER SECTION"
-            android:textColor="@color/colorAccent"
+            android:textColor="@android:color/black"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_gravity="center_vertical"

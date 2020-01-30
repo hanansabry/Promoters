@@ -8,16 +8,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
 public class EventsRepositoryImpl implements EventsRepository {
 
     private static String EVENTS_COLLECTION = "events";
+    private static String ORGANIZERS_COLLECTION = "organizers";
     private final FirebaseDatabase mDatabase;
     private PromotersRepository promotersRepository;
 
@@ -27,18 +30,30 @@ public class EventsRepositoryImpl implements EventsRepository {
     }
 
     @Override
-    public void addNewEvent(Event event, final EventsInsertionCallback callback) {
+    public void addNewEvent(final Event event, final EventsInsertionCallback callback) {
         event.setOrganizerId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        mDatabase.getReference(EVENTS_COLLECTION).push().setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+        final DatabaseReference eventRef = mDatabase.getReference(EVENTS_COLLECTION).push();
+        eventRef.setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
+                    addEventToCurrentOrganizer(eventRef.getKey());
                     callback.onEventInsertedSuccessfully();
                 } else {
                     callback.onEventInsertedFailed(task.getException().getMessage());
                 }
             }
         });
+    }
+
+    private void addEventToCurrentOrganizer(String eventId) {
+        String organizerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        HashMap<String, Object> eventChild = new HashMap<>();
+        eventChild.put(eventId, true);
+        mDatabase.getReference(ORGANIZERS_COLLECTION).child(organizerId)
+                .child("events")
+                .updateChildren(eventChild);
+
     }
 
     @Override

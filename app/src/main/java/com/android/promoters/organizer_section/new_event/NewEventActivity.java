@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.android.promoters.Injection;
 import com.android.promoters.R;
 import com.android.promoters.backend.events.EventsRepository;
+import com.android.promoters.backend.skills_regions.DataRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Skill;
 import com.google.android.material.textfield.TextInputLayout;
@@ -47,10 +48,20 @@ public class NewEventActivity extends AppCompatActivity implements EventsReposit
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new NewEventPresenter(Injection.provideEventsRepository(), this);
+        presenter = new NewEventPresenter(Injection.provideEventsRepository(), Injection.provideRegionsRepository(), this);
 
         initializeViews();
-        populateRegionsSpinner();
+        presenter.retrieveRegions(new DataRepository.RetrieveDataCallback() {
+            @Override
+            public void onDataRetrievedSuccessfully(ArrayList<String> list) {
+                populateRegionsSpinner(list);
+            }
+
+            @Override
+            public void onDataRetrievedFailed(String errmsg) {
+                Toast.makeText(NewEventActivity.this, "Can't retrieve regions", Toast.LENGTH_LONG).show();
+            }
+        });
 //        getAllSkills();
     }
 
@@ -109,11 +120,12 @@ public class NewEventActivity extends AppCompatActivity implements EventsReposit
         });
     }
 
-    private void populateRegionsSpinner() {
+    private void populateRegionsSpinner(ArrayList<String> regions) {
         final ArrayAdapter<String> regionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
         //fake date
-        regionsAdapter.add("Region1");
-        regionsAdapter.add("Region2");
+        for (String region : regions) {
+            regionsAdapter.add(region);
+        }
         regionsSpinner.setAdapter(regionsAdapter);
         regionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -154,11 +166,11 @@ public class NewEventActivity extends AppCompatActivity implements EventsReposit
     private void getAllSkills() {
         ArrayList<Skill> skills = new ArrayList<>();
         Skill s1 = new Skill();
-        s1.setSkillName("Skill Name 1");
+        s1.setName("Skill Name 1");
         s1.setRequiredPromoters(5);
 
         Skill s2 = new Skill();
-        s2.setSkillName("Skill Name 2");
+        s2.setName("Skill Name 2");
         s2.setRequiredPromoters(3);
         skills.add(s1);
         skills.add(s2);
@@ -171,7 +183,7 @@ public class NewEventActivity extends AppCompatActivity implements EventsReposit
                 EditText skillName = newSkillView.findViewById(R.id.skill_name_edittext);
                 EditText promotersNum = newSkillView.findViewById(R.id.promoters_number_edittext);
 
-                skillName.setText(skill.getSkillName());
+                skillName.setText(skill.getName());
                 skillName.setFocusable(false);
 
                 promotersNum.setText(String.valueOf(skill.getRequiredPromoters()));
@@ -224,14 +236,14 @@ public class NewEventActivity extends AppCompatActivity implements EventsReposit
                     if (skillName.getText().toString().isEmpty()) {
                         skillName.setError("Please enter skill name");
                     } else {
-                        skill.setSkillName(skillName.getText().toString().trim());
+                        skill.setName(skillName.getText().toString().trim());
                     }
                     if (promotersNum.getText().toString().isEmpty()) {
                         promotersNum.setError("Please enter number of promoters");
                     } else {
                         skill.setRequiredPromoters(Integer.valueOf(promotersNum.getText().toString().trim()));
                     }
-                    if (!(skill.getSkillName() == null || skill.getSkillName().isEmpty()) && skill.getRequiredPromoters() != 0) {
+                    if (!(skill.getName() == null || skill.getName().isEmpty()) && skill.getRequiredPromoters() != 0) {
                         requiredSkills.add(skill);
                     }
                 }
