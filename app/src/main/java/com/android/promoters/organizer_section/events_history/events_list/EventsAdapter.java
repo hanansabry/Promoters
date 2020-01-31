@@ -5,11 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.promoters.R;
+import com.android.promoters.backend.events.EventsRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.EventsHistoryPresenter;
@@ -57,6 +60,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private LinearLayout promotersContainerLayout;
         private LinearLayout emptyView;
         private Context context;
+        private int currentPosition;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +75,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         }
 
         public void setEventData(Event event) {
+            currentPosition = getAdapterPosition();
+            promotersContainerLayout.removeAllViews();
             eventNameTextView.setText(event.getTitle());
             startDateTextView.setText(event.getStartDate());
             endDateTextView.setText(event.getEndDate());
@@ -79,6 +85,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorThird));
                 if (event.getCandidatePromoters() != null) {
                     addCandidatesPromoterToLayout(new ArrayList<>(event.getCandidatePromoters().values()));
+                } else {
+                    emptyView.setVisibility(View.VISIBLE);
                 }
                 if (event.getAcceptedPromoters() != null) {
                     addAcceptedPromoterToLayout(new ArrayList<>(event.getAcceptedPromoters().values()));
@@ -87,6 +95,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorAccent));
                 if (event.getAcceptedPromoters() != null) {
                     addAcceptedPromoterToLayout(new ArrayList<>(event.getAcceptedPromoters().values()));
+                } else {
+                    emptyView.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -116,13 +126,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             //add header
             View promoterItemView = LayoutInflater.from(context)
                     .inflate(R.layout.promoter_candidate_list_item, null, false);
-            CandidatePromoterViewHolder holder = new CandidatePromoterViewHolder(promoterItemView);
+            CandidatePromoterViewHolder holder = new CandidatePromoterViewHolder(null, currentPosition, promoterItemView);
             holder.setHeader();
             promotersContainerLayout.addView(promoterItemView);
             for (Promoter promoter : promoters) {
                 promoterItemView = LayoutInflater.from(context)
                         .inflate(R.layout.promoter_candidate_list_item, null, false);
-                holder = new CandidatePromoterViewHolder(promoterItemView);
+                holder = new CandidatePromoterViewHolder(promoter, currentPosition, promoterItemView);
                 holder.setPromoterData(promoter);
                 promotersContainerLayout.addView(promoterItemView);
             }
@@ -134,29 +144,53 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private TextView promoterNameTextView, rankTextView, acceptTextView;
         private CheckBox acceptCheckbox;
         private Context context;
+        private int eventPosition;
 
-        public CandidatePromoterViewHolder(@NonNull View itemView) {
+        public CandidatePromoterViewHolder(final Promoter promoter, int eventPosition, @NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
+            this.eventPosition = eventPosition;
             promoterNameTextView = itemView.findViewById(R.id.promoter_name);
             rankTextView = itemView.findViewById(R.id.rank);
             acceptTextView = itemView.findViewById(R.id.accept_textview);
             acceptCheckbox = itemView.findViewById(R.id.accept_checkbox);
+            acceptCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        acceptCandidatePromoter(promoter);
+                    }
+                }
+            });
         }
 
-        public void setPromoterData(Promoter promoter) {
+        private void setPromoterData(Promoter promoter) {
             promoterNameTextView.setText(promoter.getName());
             rankTextView.setText(String.valueOf(promoter.getRank()));
             acceptCheckbox.setVisibility(View.VISIBLE);
             acceptTextView.setVisibility(View.INVISIBLE);
         }
 
-        public void setHeader() {
+        private void setHeader() {
             promoterNameTextView.setText(context.getResources().getString(R.string.candidates_promoters));
             rankTextView.setText(context.getResources().getString(R.string.rank));
             acceptTextView.setVisibility(View.VISIBLE);
             acceptCheckbox.setVisibility(View.INVISIBLE);
             itemView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+
+        private void acceptCandidatePromoter(Promoter promoter) {
+            presenter.acceptCandidatePromoter(promoter, eventPosition, new EventsRepository.EventsUpdateCallback() {
+                @Override
+                public void onEventUpdatedSuccessfully() {
+                    Toast.makeText(context, "Accepted", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onEventUpdatedFailed(String errmsg) {
+                    Toast.makeText(context, errmsg, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 

@@ -69,6 +69,7 @@ public class EventsRepositoryImpl implements EventsRepository {
                         for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                             Event event = eventSnapshot.getValue(Event.class);
                             event.setId(eventSnapshot.getKey());
+                            setPromotersIds(eventSnapshot, event);
                             events.add(event);
                         }
                         callback.onEventsRetrievedSuccessfully(events);
@@ -79,6 +80,22 @@ public class EventsRepositoryImpl implements EventsRepository {
                         callback.onEventsRetrievedFailed(databaseError.getMessage());
                     }
                 });
+    }
+
+    private void setPromotersIds(DataSnapshot eventSnapshot, Event event) {
+        if (event.getCandidatePromoters() != null) {
+            ArrayList<String> promotersIds = new ArrayList<>(event.getCandidatePromoters().keySet());
+            for (String promoterId : promotersIds) {
+                event.getCandidatePromoters().get(promoterId).setId(promoterId);
+            }
+        }
+
+        if (event.getAcceptedPromoters() != null) {
+            ArrayList<String> promotersIds = new ArrayList<>(event.getAcceptedPromoters().keySet());
+            for (String promoterId : promotersIds) {
+                event.getAcceptedPromoters().get(promoterId).setId(promoterId);
+            }
+        }
     }
 
     @Override
@@ -126,7 +143,26 @@ public class EventsRepositoryImpl implements EventsRepository {
                 callback.onEventUpdatedFailed(errmsg);
             }
         });
+    }
 
+    @Override
+    public void addAcceptedPromoterForEvent(String eventId, String promoterId, final EventsUpdateCallback callback) {
+//        addOrRemoveCandidatePromoterForEvent(eventId, promoterId, false, callback);
+        final DatabaseReference candidateRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("candidatePromoters").child(promoterId);
+        final DatabaseReference acceptedRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("acceptedPromoters").child(promoterId);
+
+        candidateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                candidateRef.removeValue();
+                acceptedRef.setValue(dataSnapshot.getValue(), new UpdateCompletionListener(callback));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onEventUpdatedFailed(databaseError.getMessage());
+            }
+        });
     }
 
     class UpdateCompletionListener implements DatabaseReference.CompletionListener {

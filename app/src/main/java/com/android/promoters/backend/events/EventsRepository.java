@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public interface EventsRepository {
 
+    void addAcceptedPromoterForEvent(String eventId, String promoterId, EventsUpdateCallback callback);
+
     interface EventsInsertionCallback {
 
         void onEventInsertedSuccessfully();

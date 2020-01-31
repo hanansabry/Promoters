@@ -1,5 +1,6 @@
 package com.android.promoters.backend.promoters;
 
+import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ public interface PromotersRepository {
 
     void updatePromoterData(HashMap<String, Object> updatedValues, UpdatePromoterCallback callback);
 
-    void getCandidatePromotersListByIds(ArrayList<String> ids, PromotersRetrievingCallback callback);
+    void addEventToPromoter(String promoterId, Event event);
 
-    void getAcceptedPromotersListByIds(ArrayList<String> ids, PromotersRetrievingCallback callback);
 }

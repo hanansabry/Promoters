@@ -13,6 +13,7 @@ import com.android.promoters.R;
 import com.android.promoters.backend.events.EventsRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Skill;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -88,6 +89,14 @@ public class ActiveEventsAdapter extends RecyclerView.Adapter<ActiveEventsAdapte
             }
             skillsTextView.setText(skills.toString());
             statusTextView.setText(event.getStatus().name());
+            //check if the promoter applied for this event before
+            if (event.getCandidatePromoters() != null) {
+                for (String promoterId : new ArrayList<>(event.getCandidatePromoters().keySet())) {
+                    if (promoterId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                        applyCheckBox.setChecked(true);
+                    }
+                }
+            }
         }
 
         @Override

@@ -70,29 +70,11 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
         return null;
     }
 
-
-    private ArrayList<Promoter> getPromoters1() {
-        ArrayList<Promoter> promoters = new ArrayList<>();
-        Promoter p1 = new Promoter();
-        p1.setName("Promoter 1");
-        p1.setRank(2);
-        promoters.add(p1);
-
-        Promoter p2 = new Promoter();
-        p2.setName("Promoter 2");
-        p2.setRank(2);
-        promoters.add(p2);
-
-        return promoters;
-    }
-
-    private ArrayList<Promoter> getPromoters2() {
-        ArrayList<Promoter> promoters = new ArrayList<>();
-        Promoter p1 = new Promoter();
-        p1.setName("Promoter 3");
-        p1.setRank(2);
-        promoters.add(p1);
-
-        return promoters;
+    public void acceptCandidatePromoter(Promoter promoter, int eventPosition, EventsRepository.EventsUpdateCallback callback) {
+        Event event = events.get(eventPosition);
+        //move the promoter from candidates list to accepted list
+        eventsRepository.addAcceptedPromoterForEvent(event.getId(), promoter.getId(), callback);
+        //add the event to promoter
+        promotersRepository.addEventToPromoter(promoter.getId(), event);
     }
 }
