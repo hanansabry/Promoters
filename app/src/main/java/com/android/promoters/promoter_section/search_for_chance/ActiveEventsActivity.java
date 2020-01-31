@@ -11,6 +11,7 @@ import com.android.promoters.backend.events.EventsRepository;
 import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class ActiveEventsActivity extends AppCompatActivity implements Promoters
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         presenter = new ActiveEventsPresenter(Injection.provideEventsRepository(), Injection.providePromotersRepository());
-        presenter.getPromoterData(this);
+        presenter.getPromoterData(FirebaseAuth.getInstance().getCurrentUser().getUid(), this);
         initializeRecyclerView();
     }
 

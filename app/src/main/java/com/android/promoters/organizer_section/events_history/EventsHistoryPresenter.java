@@ -35,6 +35,15 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
     public void onBindEventItemAtPosition(EventsAdapter.EventViewHolder viewHolder, int position) {
         Event event = events.get(position);
         event.setStatus(getEventStatus(event));
+//        if (position == 0) {
+////            event.setCandidatePromoters(getPromoters2());
+//        }
+////        else if (position == 1) {
+////            event.setCandidatePromoters(getPromoters2());
+////        }
+//        else {
+////            event.setCandidatePromoters(new ArrayList<Promoter>());
+//        }
         viewHolder.setEventData(event);
     }
 
@@ -80,25 +89,25 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
         return acceptedPromoters.size();
     }
 
-    @Override
-    public void retrieveCandidatePromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
-        final Event event = events.get(position);
-        if (event.getCandidatePromotersIds() != null) {
-            promotersRepository.getCandidatePromotersListByIds(
-                    new ArrayList<>(event.getCandidatePromotersIds().keySet())
-                    , callback);
-        }
-    }
-
-    @Override
-    public void retrieveAcceptedPromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
-        final Event event = events.get(position);
-        if (event.getAcceptedPromotersIds() != null) {
-            promotersRepository.getAcceptedPromotersListByIds(
-                    new ArrayList<>(event.getAcceptedPromotersIds().keySet())
-                    , callback);
-        }
-    }
+//    @Override
+//    public void retrieveCandidatePromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
+//        final Event event = events.get(position);
+//        if (event.getCandidatePromotersIds() != null) {
+//            promotersRepository.getCandidatePromotersListByIds(
+//                    new ArrayList<>(event.getCandidatePromotersIds().keySet())
+//                    , callback);
+//        }
+//    }
+//
+//    @Override
+//    public void retrieveAcceptedPromoters(int position, PromotersRepository.PromotersRetrievingCallback callback) {
+//        final Event event = events.get(position);
+//        if (event.getAcceptedPromotersIds() != null) {
+//            promotersRepository.getAcceptedPromotersListByIds(
+//                    new ArrayList<>(event.getAcceptedPromotersIds().keySet())
+//                    , callback);
+//        }
+//    }
 
 
     public void setPromoterRank(int rank, int adapterPosition) {
@@ -122,5 +131,31 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    private ArrayList<Promoter> getPromoters1() {
+        ArrayList<Promoter> promoters = new ArrayList<>();
+        Promoter p1 = new Promoter();
+        p1.setName("Promoter 1");
+        p1.setRank(2);
+        promoters.add(p1);
+
+        Promoter p2 = new Promoter();
+        p2.setName("Promoter 2");
+        p2.setRank(2);
+        promoters.add(p2);
+
+        return promoters;
+    }
+
+    private ArrayList<Promoter> getPromoters2() {
+        ArrayList<Promoter> promoters = new ArrayList<>();
+        Promoter p1 = new Promoter();
+        p1.setName("Promoter 3");
+        p1.setRank(2);
+        promoters.add(p1);
+
+        return promoters;
     }
 }

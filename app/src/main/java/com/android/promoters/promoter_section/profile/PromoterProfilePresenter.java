@@ -69,8 +69,8 @@ public class PromoterProfilePresenter {
         return selectedSkills;
     }
 
-    public void getCurrentPromoter(PromotersRepository.PromotersRetrievingCallback callback) {
-        promotersRepository.getPromoterById(callback);
+    public void getCurrentPromoter(String promoterId, PromotersRepository.PromotersRetrievingCallback callback) {
+        promotersRepository.getPromoterById(promoterId, callback);
     }
 
     public void updatePromoter(HashMap<String, Object> promoterData, PromotersRepository.UpdatePromoterCallback callback) {

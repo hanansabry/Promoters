@@ -16,8 +16,10 @@ public class Event {
     private String endDate;
     private String region;
     private ArrayList<Skill> requiredSkills;
-    private HashMap<String, Boolean> acceptedPromotersIds;
-    private HashMap<String, Boolean> candidatePromotersIds;
+    //    private HashMap<String, Boolean> acceptedPromotersIds;
+//    private HashMap<String, Boolean> candidatePromotersIds;
+    private HashMap<String, Promoter> acceptedPromoters;
+    private HashMap<String, Promoter> candidatePromoters;
     private EventStatus status;
 
     public String getId() {
@@ -76,20 +78,37 @@ public class Event {
         this.requiredSkills = requiredSkills;
     }
 
-    public HashMap<String, Boolean> getAcceptedPromotersIds() {
-        return acceptedPromotersIds;
+//    public HashMap<String, Boolean> getAcceptedPromotersIds() {
+//        return acceptedPromotersIds;
+//    }
+//
+//    public void setAcceptedPromotersIds(HashMap<String, Boolean> acceptedPromotersIds) {
+//        this.acceptedPromotersIds = acceptedPromotersIds;
+//    }
+//
+//    public HashMap<String, Boolean> getCandidatePromotersIds() {
+//        return candidatePromotersIds;
+//    }
+//
+//    public void setCandidatePromotersIds(HashMap<String, Boolean> candidatePromotersIds) {
+//        this.candidatePromotersIds = candidatePromotersIds;
+//    }
+
+
+    public HashMap<String, Promoter> getAcceptedPromoters() {
+        return acceptedPromoters;
     }
 
-    public void setAcceptedPromotersIds(HashMap<String, Boolean> acceptedPromotersIds) {
-        this.acceptedPromotersIds = acceptedPromotersIds;
+    public void setAcceptedPromoters(HashMap<String, Promoter> acceptedPromoters) {
+        this.acceptedPromoters = acceptedPromoters;
     }
 
-    public HashMap<String, Boolean> getCandidatePromotersIds() {
-        return candidatePromotersIds;
+    public HashMap<String, Promoter> getCandidatePromoters() {
+        return candidatePromoters;
     }
 
-    public void setCandidatePromotersIds(HashMap<String, Boolean> candidatePromotersIds) {
-        this.candidatePromotersIds = candidatePromotersIds;
+    public void setCandidatePromoters(HashMap<String, Promoter> candidatePromoters) {
+        this.candidatePromoters = candidatePromoters;
     }
 
     public EventStatus getStatus() {

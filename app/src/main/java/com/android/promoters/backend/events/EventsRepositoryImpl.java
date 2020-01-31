@@ -3,6 +3,7 @@ package com.android.promoters.backend.events;
 import com.android.promoters.Injection;
 import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
+import com.android.promoters.model.Promoter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -105,15 +106,27 @@ public class EventsRepositoryImpl implements EventsRepository {
     }
 
     @Override
-    public void addOrRemoveCandidatePromoterForEvent(String eventId, String promoterId, boolean add, EventsUpdateCallback callback) {
-        HashMap<String, Object> candidatePromoter = new HashMap<>();
-        candidatePromoter.put(promoterId, true);
-        DatabaseReference candidateRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("candidatePromotersIds");
-        if (add) {
-            candidateRef.updateChildren(candidatePromoter, new UpdateCompletionListener(callback));
-        } else {
-            candidateRef.child(promoterId).removeValue(new UpdateCompletionListener(callback));
-        }
+    public void addOrRemoveCandidatePromoterForEvent(final String eventId, final String promoterId, final boolean add, final EventsUpdateCallback callback) {
+        promotersRepository.getPromoterById(promoterId, new PromotersRepository.PromotersRetrievingCallback() {
+            @Override
+            public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
+                Promoter currentPromoter = promoters.get(0);
+                HashMap<String, Object> candidatePromoter = new HashMap<>();
+                candidatePromoter.put(promoterId, currentPromoter);
+                DatabaseReference candidateRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("candidatePromoters");
+                if (add) {
+                    candidateRef.updateChildren(candidatePromoter, new UpdateCompletionListener(callback));
+                } else {
+                    candidateRef.child(promoterId).removeValue(new UpdateCompletionListener(callback));
+                }
+            }
+
+            @Override
+            public void onPromotersRetrievedFailed(String errmsg) {
+                callback.onEventUpdatedFailed(errmsg);
+            }
+        });
+
     }
 
     class UpdateCompletionListener implements DatabaseReference.CompletionListener {

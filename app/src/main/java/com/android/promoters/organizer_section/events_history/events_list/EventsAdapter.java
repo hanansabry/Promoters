@@ -5,11 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.promoters.EmptyRecyclerView;
 import com.android.promoters.R;
-import com.android.promoters.backend.promoters.PromotersRepository;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.EventsHistoryPresenter;
@@ -45,6 +43,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+        System.out.println("Event position:" + position);
         presenter.onBindEventItemAtPosition(holder, position);
     }
 
@@ -69,9 +68,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             startDateTextView = itemView.findViewById(R.id.start_date);
             endDateTextView = itemView.findViewById(R.id.end_date);
             eventStatusTextView = itemView.findViewById(R.id.event_status);
-
-            initializePromotersRecyclerView(itemView);
-//            presenter.retrieveaccptedpromoters(getAdapterPosition());
         }
 
         private void initializePromotersRecyclerView(View itemView) {
@@ -81,6 +77,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         }
 
         public void setEventData(Event event) {
+            initializePromotersRecyclerView(itemView);
             eventNameTextView.setText(event.getTitle());
             startDateTextView.setText(event.getStartDate());
             endDateTextView.setText(event.getEndDate());
@@ -88,33 +85,21 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             if (event.getStatus() != Event.EventStatus.Closed) {
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorThird));
                 candidatePromotersAdapter = new CandidatePromotersAdapter(presenter);
+                candidatePromotersAdapter.bindPromoters(
+                        event.getCandidatePromoters() != null ?
+                                new ArrayList<>(event.getCandidatePromoters().values()) :
+                                new ArrayList<Promoter>()
+                );
                 promotersRecyclerView.setAdapter(candidatePromotersAdapter);
-                presenter.retrieveCandidatePromoters(getAdapterPosition(), new PromotersRepository.PromotersRetrievingCallback() {
-                    @Override
-                    public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
-                        candidatePromotersAdapter.bindPromoters(promoters);
-                    }
-
-                    @Override
-                    public void onPromotersRetrievedFailed(String errmsg) {
-                        Toast.makeText(context, errmsg, Toast.LENGTH_SHORT).show();
-                    }
-                });
             } else {
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorAccent));
                 acceptedPromotersAdapter = new AcceptedPromotersAdapter(presenter);
+                acceptedPromotersAdapter.bindPromoters(
+                        event.getAcceptedPromoters() != null ?
+                                new ArrayList<Promoter>(event.getAcceptedPromoters().values()) :
+                                new ArrayList<Promoter>()
+                );
                 promotersRecyclerView.setAdapter(acceptedPromotersAdapter);
-                presenter.retrieveAcceptedPromoters(getAdapterPosition(), new PromotersRepository.PromotersRetrievingCallback() {
-                    @Override
-                    public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
-                        acceptedPromotersAdapter.bindPromoters(promoters);
-                    }
-
-                    @Override
-                    public void onPromotersRetrievedFailed(String errmsg) {
-                        Toast.makeText(context, errmsg, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         }
     }

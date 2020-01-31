@@ -25,8 +25,8 @@ public class PromotersRepositoryImpl implements PromotersRepository {
     }
 
     @Override
-    public void getPromoterById(final PromotersRetrievingCallback callback) {
-        String promoterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    public void getPromoterById(String promoterId, final PromotersRetrievingCallback callback) {
+//        String promoterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mDatabase.getReference(PROMOTERS_COLLECTION).child(promoterId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

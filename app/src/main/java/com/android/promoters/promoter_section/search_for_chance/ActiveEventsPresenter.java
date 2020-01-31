@@ -26,8 +26,8 @@ public class ActiveEventsPresenter {
         eventsRepository.getEventsByRegion(regionName, callback);
     }
 
-    public void getPromoterData(PromotersRepository.PromotersRetrievingCallback callback) {
-        promotersRepository.getPromoterById(callback);
+    public void getPromoterData(String promoterId, PromotersRepository.PromotersRetrievingCallback callback) {
+        promotersRepository.getPromoterById(promoterId, callback);
     }
 
     public void bindEvents(ArrayList<Event> events) {

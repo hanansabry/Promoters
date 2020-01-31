@@ -21,7 +21,7 @@ public interface PromotersRepository {
         void onPromoterUpdatedFailed(String errmsg);
     }
 
-    void getPromoterById(PromotersRetrievingCallback callback);
+    void getPromoterById(String promoterId, PromotersRetrievingCallback callback);
 
     void updatePromoterData(HashMap<String, Object> updatedValues, UpdatePromoterCallback callback);
 
