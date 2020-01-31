@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.promoters.R;
+import com.android.promoters.login.LoginActivity;
 import com.android.promoters.model.User;
 import com.android.promoters.promoter_section.events_history.PromoterEventsHistoryActivity;
 import com.android.promoters.promoter_section.profile.PromoterProfileActivity;
@@ -32,6 +33,9 @@ public class PromoterMainActivity extends AppCompatActivity {
 
     public void logout(View view) {
         FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     public void onProfileDetailsClicked(View view) {

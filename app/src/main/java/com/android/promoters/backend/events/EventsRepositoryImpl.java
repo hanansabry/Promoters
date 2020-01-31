@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class EventsRepositoryImpl implements EventsRepository {
 
@@ -66,7 +67,7 @@ public class EventsRepositoryImpl implements EventsRepository {
                         ArrayList<Event> events = new ArrayList<>();
                         for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                             Event event = eventSnapshot.getValue(Event.class);
-                            event.setId(dataSnapshot.getKey());
+                            event.setId(eventSnapshot.getKey());
                             events.add(event);
                         }
                         callback.onEventsRetrievedSuccessfully(events);
@@ -77,5 +78,59 @@ public class EventsRepositoryImpl implements EventsRepository {
                         callback.onEventsRetrievedFailed(databaseError.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void getEventsByRegion(String regionName, final EventsRetrievingCallback callback) {
+        mDatabase.getReference(EVENTS_COLLECTION)
+                .orderByChild("region")
+                .equalTo(regionName)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<Event> events = new ArrayList<>();
+                        for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                            Event event = eventSnapshot.getValue(Event.class);
+                            event.setId(eventSnapshot.getKey());
+                            events.add(event);
+                        }
+                        callback.onEventsRetrievedSuccessfully(events);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onEventsRetrievedFailed(databaseError.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    public void addOrRemoveCandidatePromoterForEvent(String eventId, String promoterId, boolean add, EventsUpdateCallback callback) {
+        HashMap<String, Object> candidatePromoter = new HashMap<>();
+        candidatePromoter.put(promoterId, true);
+        DatabaseReference candidateRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("candidatePromotersIds");
+        if (add) {
+            candidateRef.updateChildren(candidatePromoter, new UpdateCompletionListener(callback));
+        } else {
+            candidateRef.child(promoterId).removeValue(new UpdateCompletionListener(callback));
+        }
+    }
+
+    class UpdateCompletionListener implements DatabaseReference.CompletionListener {
+
+        private final EventsUpdateCallback callback;
+
+        UpdateCompletionListener(EventsUpdateCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+            if (databaseError == null) {
+                callback.onEventUpdatedSuccessfully();
+            } else {
+                callback.onEventUpdatedFailed(databaseError.getMessage());
+            }
+        }
     }
 }

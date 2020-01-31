@@ -67,11 +67,14 @@ public class PromotersRepositoryImpl implements PromotersRepository {
     public void getCandidatePromotersListByIds(final ArrayList<String> ids, final PromotersRetrievingCallback callback) {
         final ArrayList<Promoter> promoters = new ArrayList<>();
         promotersCounter1 = 0;
-
-        for (String promoterId : ids) {
+        for (final String promoterId : ids) {
             mDatabase.getReference(PROMOTERS_COLLECTION).child(promoterId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String firstPromoterId = ids.get(0);
+                    if (firstPromoterId.equalsIgnoreCase(promoterId)) {
+                        promotersCounter1 = 0;
+                    }
                     promoters.add(dataSnapshot.getValue(Promoter.class));
                     promotersCounter1++;
                     if (ids.size() == promotersCounter1) {

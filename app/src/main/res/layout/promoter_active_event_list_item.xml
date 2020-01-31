@@ -35,12 +35,11 @@
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
 
-            <ImageView
+            <CheckBox
+                android:id="@+id/apply_checkbox"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/event_icon"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="8dp" />
+                android:layout_alignParentEnd="true" />
 
             <LinearLayout
                 android:id="@+id/event_date"
@@ -77,39 +76,41 @@
 
             </LinearLayout>
 
-            <FrameLayout
+            <!--<FrameLayout-->
+            <!--android:id="@+id/candidates_layout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/event_date"-->
+            <!--android:layout_margin="8dp">-->
+
+            <!--<com.android.promoters.EmptyRecyclerView-->
+            <!--android:id="@+id/promoters_candidates_rv"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
+
+            <LinearLayout
                 android:id="@+id/skills_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_date"
+                android:orientation="vertical"
                 android:layout_margin="8dp">
 
-                <com.android.promoters.EmptyRecyclerView
-                    android:id="@+id/promoters_candidates_rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <LinearLayout
-                    android:id="@+id/empty_view"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:text="Required Skills"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/amaranth" />
 
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/no_candidates" />
+                <TextView
+                    android:id="@+id/required_skills_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Promoters applied for this event yet" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No Promoters applied for this event yet" />
-
-                </LinearLayout>
-            </FrameLayout>
+            </LinearLayout>
+            <!--</FrameLayout>-->
 
             <View
                 android:id="@+id/view1"
@@ -130,7 +131,7 @@
                 android:padding="16dp"
                 android:textSize="18sp"
                 android:text="EVENT STATUS"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorThird" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
