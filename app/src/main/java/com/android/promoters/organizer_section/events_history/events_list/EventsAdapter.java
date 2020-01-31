@@ -4,20 +4,19 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.promoters.EmptyRecyclerView;
 import com.android.promoters.R;
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
 import com.android.promoters.organizer_section.events_history.EventsHistoryPresenter;
-import com.android.promoters.organizer_section.events_history.promoters_list.AcceptedPromotersAdapter;
-import com.android.promoters.organizer_section.events_history.promoters_list.CandidatePromotersAdapter;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
@@ -55,9 +54,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     public class EventViewHolder extends RecyclerView.ViewHolder {
 
         private TextView eventNameTextView, startDateTextView, endDateTextView, eventStatusTextView;
-        private EmptyRecyclerView promotersRecyclerView;
-        private CandidatePromotersAdapter candidatePromotersAdapter;
-        private AcceptedPromotersAdapter acceptedPromotersAdapter;
+        private LinearLayout promotersContainerLayout;
+        private LinearLayout emptyView;
         private Context context;
 
         public EventViewHolder(@NonNull View itemView) {
@@ -68,39 +66,129 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             startDateTextView = itemView.findViewById(R.id.start_date);
             endDateTextView = itemView.findViewById(R.id.end_date);
             eventStatusTextView = itemView.findViewById(R.id.event_status);
-        }
-
-        private void initializePromotersRecyclerView(View itemView) {
-            promotersRecyclerView = itemView.findViewById(R.id.promoters_candidates_rv);
-            promotersRecyclerView.setEmptyView(itemView.findViewById(R.id.empty_view));
-            promotersRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            promotersContainerLayout = itemView.findViewById(R.id.promoters_candidates_layout);
+            emptyView = itemView.findViewById(R.id.empty_view);
         }
 
         public void setEventData(Event event) {
-            initializePromotersRecyclerView(itemView);
             eventNameTextView.setText(event.getTitle());
             startDateTextView.setText(event.getStartDate());
             endDateTextView.setText(event.getEndDate());
             eventStatusTextView.setText(event.getStatus().name());
             if (event.getStatus() != Event.EventStatus.Closed) {
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorThird));
-                candidatePromotersAdapter = new CandidatePromotersAdapter(presenter);
-                candidatePromotersAdapter.bindPromoters(
-                        event.getCandidatePromoters() != null ?
-                                new ArrayList<>(event.getCandidatePromoters().values()) :
-                                new ArrayList<Promoter>()
-                );
-                promotersRecyclerView.setAdapter(candidatePromotersAdapter);
+                if (event.getCandidatePromoters() != null) {
+                    addCandidatesPromoterToLayout(new ArrayList<>(event.getCandidatePromoters().values()));
+                }
+                if (event.getAcceptedPromoters() != null) {
+                    addAcceptedPromoterToLayout(new ArrayList<>(event.getAcceptedPromoters().values()));
+                }
             } else {
                 eventStatusTextView.setTextColor(context.getResources().getColor(R.color.colorAccent));
-                acceptedPromotersAdapter = new AcceptedPromotersAdapter(presenter);
-                acceptedPromotersAdapter.bindPromoters(
-                        event.getAcceptedPromoters() != null ?
-                                new ArrayList<Promoter>(event.getAcceptedPromoters().values()) :
-                                new ArrayList<Promoter>()
-                );
-                promotersRecyclerView.setAdapter(acceptedPromotersAdapter);
+                if (event.getAcceptedPromoters() != null) {
+                    addAcceptedPromoterToLayout(new ArrayList<>(event.getAcceptedPromoters().values()));
+                }
             }
+        }
+
+        private void addAcceptedPromoterToLayout(ArrayList<Promoter> promoters) {
+            emptyView.setVisibility(View.INVISIBLE);
+            promotersContainerLayout.setVisibility(View.VISIBLE);
+
+            //add header
+            View promoterItemView = LayoutInflater.from(context)
+                    .inflate(R.layout.promoter_accepted_list_item, null, false);
+            AcceptedPromoterViewHolder holder = new AcceptedPromoterViewHolder(promoterItemView);
+            holder.setHeader();
+            promotersContainerLayout.addView(promoterItemView);
+            for (Promoter promoter : promoters) {
+                promoterItemView = LayoutInflater.from(context)
+                        .inflate(R.layout.promoter_accepted_list_item, null, false);
+                holder = new AcceptedPromoterViewHolder(promoterItemView);
+                holder.setPromoterName(promoter);
+                promotersContainerLayout.addView(promoterItemView);
+            }
+        }
+
+        private void addCandidatesPromoterToLayout(ArrayList<Promoter> promoters) {
+            emptyView.setVisibility(View.INVISIBLE);
+            promotersContainerLayout.setVisibility(View.VISIBLE);
+            //add header
+            View promoterItemView = LayoutInflater.from(context)
+                    .inflate(R.layout.promoter_candidate_list_item, null, false);
+            CandidatePromoterViewHolder holder = new CandidatePromoterViewHolder(promoterItemView);
+            holder.setHeader();
+            promotersContainerLayout.addView(promoterItemView);
+            for (Promoter promoter : promoters) {
+                promoterItemView = LayoutInflater.from(context)
+                        .inflate(R.layout.promoter_candidate_list_item, null, false);
+                holder = new CandidatePromoterViewHolder(promoterItemView);
+                holder.setPromoterData(promoter);
+                promotersContainerLayout.addView(promoterItemView);
+            }
+        }
+    }
+
+    class CandidatePromoterViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView promoterNameTextView, rankTextView, acceptTextView;
+        private CheckBox acceptCheckbox;
+        private Context context;
+
+        public CandidatePromoterViewHolder(@NonNull View itemView) {
+            super(itemView);
+            context = itemView.getContext();
+            promoterNameTextView = itemView.findViewById(R.id.promoter_name);
+            rankTextView = itemView.findViewById(R.id.rank);
+            acceptTextView = itemView.findViewById(R.id.accept_textview);
+            acceptCheckbox = itemView.findViewById(R.id.accept_checkbox);
+        }
+
+        public void setPromoterData(Promoter promoter) {
+            promoterNameTextView.setText(promoter.getName());
+            rankTextView.setText(String.valueOf(promoter.getRank()));
+            acceptCheckbox.setVisibility(View.VISIBLE);
+            acceptTextView.setVisibility(View.INVISIBLE);
+        }
+
+        public void setHeader() {
+            promoterNameTextView.setText(context.getResources().getString(R.string.candidates_promoters));
+            rankTextView.setText(context.getResources().getString(R.string.rank));
+            acceptTextView.setVisibility(View.VISIBLE);
+            acceptCheckbox.setVisibility(View.INVISIBLE);
+            itemView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+    }
+
+    public class AcceptedPromoterViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView promoterNameTextView, rankTextView;
+        private EditText rankEditText;
+        private Context context;
+
+        public AcceptedPromoterViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            context = itemView.getContext();
+            promoterNameTextView = itemView.findViewById(R.id.promoter_name);
+            rankTextView = itemView.findViewById(R.id.rank);
+            rankEditText = itemView.findViewById(R.id.add_rank_edittext);
+        }
+
+        public void setPromoterName(Promoter promoter) {
+            promoterNameTextView.setText(promoter.getName());
+        }
+
+        public void setPromoterRank() {
+            presenter.setPromoterRank(Integer.valueOf(rankEditText.getText().toString()), getAdapterPosition());
+        }
+
+        public void setHeader() {
+            promoterNameTextView.setText("Accepted Promoters");
+            rankTextView.setText(context.getResources().getString(R.string.rank));
+            rankTextView.setVisibility(View.VISIBLE);
+            rankEditText.setVisibility(View.INVISIBLE);
+            itemView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
         }
     }
 }

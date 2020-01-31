@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/colorPrimary" />
+        android:layout_marginEnd="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +25,7 @@
             android:layout_weight="3.5"
             android:fontFamily="@font/coming_soon"
             android:padding="8dp"
-            android:text="@string/candidates_promoters"
+            android:text="Accepted Promoters"
             android:textColor="@android:color/black" />
 
         <FrameLayout
