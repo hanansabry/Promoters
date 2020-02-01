@@ -23,4 +23,5 @@
     <string name="rank">Rank</string>
     <string name="accept">Accept</string>
     <string name="promoter_name">Promoter Name</string>
+    <string name="event_rank">Rank: %d</string>
 </resources>

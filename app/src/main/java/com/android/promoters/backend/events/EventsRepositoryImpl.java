@@ -123,6 +123,29 @@ public class EventsRepositoryImpl implements EventsRepository {
     }
 
     @Override
+    public void getEventDataById(String eventId, final EventsRetrievingCallback callback) {
+        mDatabase.getReference(EVENTS_COLLECTION)
+                .child(eventId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<Event> events = new ArrayList<>();
+//                        for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                        Event event = dataSnapshot.getValue(Event.class);
+                        event.setId(dataSnapshot.getKey());
+                        events.add(event);
+//                        }
+                        callback.onEventsRetrievedSuccessfully(events);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onEventsRetrievedFailed(databaseError.getMessage());
+                    }
+                });
+    }
+
+    @Override
     public void addOrRemoveCandidatePromoterForEvent(final String eventId, final String promoterId, final boolean add, final EventsUpdateCallback callback) {
         promotersRepository.getPromoterById(promoterId, new PromotersRepository.PromotersRetrievingCallback() {
             @Override

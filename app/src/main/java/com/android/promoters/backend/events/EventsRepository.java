@@ -39,4 +39,6 @@ public interface EventsRepository {
                                               String promoterId,
                                               boolean add,
                                               EventsUpdateCallback callback);
+
+    void getEventDataById(String eventId, EventsRetrievingCallback callback);
 }

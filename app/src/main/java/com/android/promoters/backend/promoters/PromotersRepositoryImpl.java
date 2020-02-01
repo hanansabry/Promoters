@@ -2,6 +2,7 @@ package com.android.promoters.backend.promoters;
 
 import com.android.promoters.model.Event;
 import com.android.promoters.model.Promoter;
+import com.android.promoters.model.PromoterEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -118,4 +119,33 @@ public class PromotersRepositoryImpl implements PromotersRepository {
 //                .child("rank")
 //                .setValue(promoter.getRank() + rank);
     }
+
+    @Override
+    public void getPromoterEvents(final PromoterEventRetrievingCallback callback) {
+        String promoterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabase.getReference(PROMOTERS_COLLECTION)
+                .child(promoterId)
+                .child("events")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<PromoterEvent> promoterEvents = new ArrayList<>();
+                        for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                            HashMap<String, Long> eventRank = (HashMap<String, Long>) eventSnapshot.getValue();
+                            PromoterEvent promoterEvent = new PromoterEvent();
+                            promoterEvent.setEventId(eventSnapshot.getKey());
+                            promoterEvent.setEventRank(eventRank.get("eventRank").intValue());
+                            promoterEvents.add(promoterEvent);
+                        }
+                        callback.onPromoterEventsRetrievedSuccessfully(promoterEvents);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onPromoterEventsRetrievedFailed(databaseError.getMessage());
+                    }
+                });
+    }
+
+//    private void getEventDataByEventId(String eventId, )
 }
