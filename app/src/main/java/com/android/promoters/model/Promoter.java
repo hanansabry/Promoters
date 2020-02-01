@@ -1,6 +1,7 @@
 package com.android.promoters.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Promoter {
 
@@ -10,7 +11,7 @@ public class Promoter {
     private int experience;
     private int rank;
     private ArrayList<String> skills;
-    private ArrayList<String> eventsList;
+    private HashMap<String, PromoterEvent> events;
 
     public String getId() {
         return id;
@@ -60,11 +61,11 @@ public class Promoter {
         this.skills = skills;
     }
 
-    public ArrayList<String> getEventsList() {
-        return eventsList;
+    public HashMap<String, PromoterEvent> getEvents() {
+        return events;
     }
 
-    public void setEventsList(ArrayList<String> eventsList) {
-        this.eventsList = eventsList;
+    public void setEvents(HashMap<String, PromoterEvent> events) {
+        this.events = events;
     }
 }

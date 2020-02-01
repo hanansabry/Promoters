@@ -62,7 +62,7 @@ public class EventsRepositoryImpl implements EventsRepository {
     public void getAllEventsOfOrganizer(String organizerId, final EventsRetrievingCallback callback) {
         mDatabase.getReference(EVENTS_COLLECTION)
                 .orderByChild("organizerId").equalTo(organizerId)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         ArrayList<Event> events = new ArrayList<>();
@@ -128,8 +128,10 @@ public class EventsRepositoryImpl implements EventsRepository {
             @Override
             public void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoters) {
                 Promoter currentPromoter = promoters.get(0);
+                Promoter promoter = new Promoter();
+                promoter.setName(currentPromoter.getName());
                 HashMap<String, Object> candidatePromoter = new HashMap<>();
-                candidatePromoter.put(promoterId, currentPromoter);
+                candidatePromoter.put(promoterId, promoter);
                 DatabaseReference candidateRef = mDatabase.getReference(EVENTS_COLLECTION).child(eventId).child("candidatePromoters");
                 if (add) {
                     candidateRef.updateChildren(candidatePromoter, new UpdateCompletionListener(callback));

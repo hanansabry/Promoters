@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 public interface PromotersRepository {
 
+    void updatePromoterRankForEvent(Promoter promoter, String eventId, int newRank);
+
     interface PromotersRetrievingCallback {
 
         void onPromotersRetrievedSuccessfully(ArrayList<Promoter> promoter);

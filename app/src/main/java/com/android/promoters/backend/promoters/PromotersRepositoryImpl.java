@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -63,9 +64,58 @@ public class PromotersRepositoryImpl implements PromotersRepository {
 
     @Override
     public void addEventToPromoter(String promoterId, Event event) {
-        HashMap<String, Object> eventsValues = new HashMap<>();
-        eventsValues.put(event.getId(), true);
-        mDatabase.getReference(PROMOTERS_COLLECTION).child(promoterId).child("events").updateChildren(eventsValues);
+        HashMap<String, Object> eventRank = new HashMap<>();
+        eventRank.put("eventRank", 0);
+        mDatabase.getReference(PROMOTERS_COLLECTION)
+                .child(promoterId)
+                .child("events")
+                .child(event.getId())
+                .updateChildren(eventRank);
     }
 
+    @Override
+    public void updatePromoterRankForEvent(Promoter promoter, String eventId, int rank) {
+        HashMap<String, Object> eventRank = new HashMap<>();
+        eventRank.put("eventRank", rank);
+        mDatabase.getReference(PROMOTERS_COLLECTION)
+                .child(promoter.getId())
+                .child("events")
+                .child(eventId)
+                .updateChildren(eventRank);
+
+        //update promoter rank in promoters and eventscollection
+        mDatabase.getReference("events")
+                .child(eventId)
+                .child("acceptedPromoters")
+                .child(promoter.getId())
+                .child("rank")
+                .setValue(rank);
+
+        final DatabaseReference promoterRef = mDatabase.getReference(PROMOTERS_COLLECTION).child(promoter.getId());
+        promoterRef.child("events").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int totalRank = 0;
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                    int eventRank = eventSnapshot.child("eventRank").getValue(Integer.class);
+                    totalRank += eventRank;
+                }
+                promoterRef.child("rank").setValue(totalRank);
+//                        eventPromoterRef.child("rank").setValue(totalRank);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+//
+//        //update promoter rank in events collection
+//        mDatabase.getReference("events")
+//                .child(eventId)
+//                .child("acceptedPromoters")
+//                .child(promoter.getId())
+//                .child("rank")
+//                .setValue(promoter.getRank() + rank);
+    }
 }

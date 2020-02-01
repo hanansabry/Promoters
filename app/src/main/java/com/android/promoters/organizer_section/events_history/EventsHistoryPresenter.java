@@ -14,8 +14,6 @@ import java.util.Date;
 public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
 
     private ArrayList<Event> events = new ArrayList<>();
-    private ArrayList<Promoter> candidatePromoters = new ArrayList<>();
-    private ArrayList<Promoter> acceptedPromoters = new ArrayList<>();
     private final EventsRepository eventsRepository;
     private final PromotersRepository promotersRepository;
 
@@ -47,9 +45,9 @@ public class EventsHistoryPresenter implements EventsHistoryContract.Presenter {
         eventsRepository.getAllEventsOfOrganizer(organizerId, callback);
     }
 
-    public void setPromoterRank(int rank, int adapterPosition) {
-        Promoter promoter = candidatePromoters.get(adapterPosition);
-        promoter.setRank(rank);
+    public void setPromoterRank(Promoter promoter, int eventPosition, int newRank) {
+        Event event = events.get(eventPosition);
+        promotersRepository.updatePromoterRankForEvent(promoter, event.getId(), newRank);
     }
 
     public Event.EventStatus getEventStatus(Event event) {

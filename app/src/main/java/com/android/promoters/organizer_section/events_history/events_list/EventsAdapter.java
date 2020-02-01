@@ -1,6 +1,9 @@
 package com.android.promoters.organizer_section.events_history.events_list;
 
 import android.content.Context;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,14 +111,15 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             //add header
             View promoterItemView = LayoutInflater.from(context)
                     .inflate(R.layout.promoter_accepted_list_item, null, false);
-            AcceptedPromoterViewHolder holder = new AcceptedPromoterViewHolder(promoterItemView);
+            AcceptedPromoterViewHolder holder = new AcceptedPromoterViewHolder(null, currentPosition, promoterItemView);
             holder.setHeader();
             promotersContainerLayout.addView(promoterItemView);
             for (Promoter promoter : promoters) {
                 promoterItemView = LayoutInflater.from(context)
                         .inflate(R.layout.promoter_accepted_list_item, null, false);
-                holder = new AcceptedPromoterViewHolder(promoterItemView);
+                holder = new AcceptedPromoterViewHolder(promoter, currentPosition, promoterItemView);
                 holder.setPromoterName(promoter);
+                //TODO set rank of promoter for this event if exists
                 promotersContainerLayout.addView(promoterItemView);
             }
         }
@@ -199,22 +203,54 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private TextView promoterNameTextView, rankTextView;
         private EditText rankEditText;
         private Context context;
+        private Handler handler = new Handler();
+        private final long DELAY = 2000; // in ms
 
-        public AcceptedPromoterViewHolder(@NonNull View itemView) {
+        public AcceptedPromoterViewHolder(final Promoter promoter, final int eventPosition, @NonNull View itemView) {
             super(itemView);
 
             context = itemView.getContext();
             promoterNameTextView = itemView.findViewById(R.id.promoter_name);
             rankTextView = itemView.findViewById(R.id.rank);
             rankEditText = itemView.findViewById(R.id.add_rank_edittext);
+            if (promoter != null)
+                setPromoterRank(promoter.getRank());
+
+            rankEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (handler != null) {
+                        handler = null;
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    if (s.length() >= 1) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, s.toString(), Toast.LENGTH_SHORT).show();
+                                Integer promoterRank = Integer.valueOf(s.toString());
+                                presenter.setPromoterRank(promoter, eventPosition, promoterRank);
+                            }
+                        }, DELAY);
+                    }
+                }
+            });
         }
 
         public void setPromoterName(Promoter promoter) {
             promoterNameTextView.setText(promoter.getName());
         }
 
-        public void setPromoterRank() {
-            presenter.setPromoterRank(Integer.valueOf(rankEditText.getText().toString()), getAdapterPosition());
+        public void setPromoterRank(int rank) {
+            rankEditText.setHint(rank == 0 ? "Set Rank" : "Current Rank : " + String.valueOf(rank));
         }
 
         public void setHeader() {
