@@ -26,6 +26,7 @@ public class SkillsAdapter extends RecyclerView.Adapter<SkillsAdapter.SkillViewH
 
     public void bindSkills(ArrayList<String> skills) {
         presenter.bindSkills(skills);
+        notifyDataSetChanged();
     }
 
     @NonNull

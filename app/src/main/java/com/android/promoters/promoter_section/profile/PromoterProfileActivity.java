@@ -144,7 +144,8 @@ public class PromoterProfileActivity extends AppCompatActivity {
 
     private HashMap<String, Object> getPromoterData() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("experience", Integer.valueOf(experienceEditText.getText().toString().trim()));
+        String experience = experienceEditText.getText().toString().trim();
+        data.put("experience", Integer.valueOf(experience.equals("") ? "0" : experience));
         data.put("region", selectedRegion);
         data.put("skills", presenter.getSelectedSkills());
         return data;
